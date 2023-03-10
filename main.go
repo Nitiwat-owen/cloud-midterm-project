@@ -19,6 +19,7 @@ func main() {
 
 	r.POST("/api/messages", message.CreateMessage)
 	r.PUT("/api/messages/:uuid", message.UpdateMessage)
-	r.DELETE("/api/messages/:uuid",message.DeleteMessage)
+	r.DELETE("/api/messages/:uuid", message.DeleteMessage)
+
 	r.Run()
 }
