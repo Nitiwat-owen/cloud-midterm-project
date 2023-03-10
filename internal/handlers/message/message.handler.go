@@ -28,7 +28,7 @@ func CreateMessage(c *gin.Context) {
 		Author:       requestBody.Author,
 		Message:      requestBody.Message,
 		Likes:        requestBody.Likes,
-		ImageUpdate:  requestBody.ImageUpdate,
+		LastImageUpdate:  time.Now(),
 		LastUpdateAt: time.Now(),
 	}
 
@@ -54,13 +54,15 @@ func UpdateMessage(c *gin.Context){
 		return
 	}
 	id, _ := uuid.Parse(c.Param("uuid"))
+	
 	update := &message.Message{
 		ID:           &id,
 		Author:       requestBody.Author,
 		Message:      requestBody.Message,
 		Likes:        requestBody.Likes,
-		ImageUpdate:  requestBody.ImageUpdate,
-		LastUpdateAt: time.Now(),
+	}
+	if requestBody.ImageUpdate{
+		update.LastImageUpdate = time.Now()
 	}
 	database.DB.Model(&oldMessage).Updates(update)
 	c.JSON(204,gin.H{"data": oldMessage})

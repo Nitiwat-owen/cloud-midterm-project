@@ -14,7 +14,7 @@ type Message struct {
 	Likes        uint           `json:"likes"`
 	IsDeleted    gorm.DeletedAt `json:"isDeleted" gorm:"index;type:timestamp"`
 	LastUpdateAt time.Time      `json:"lastUpdateAt" gorm:"type:timestamp;autoUpdateTime:nano"`
-	LastImageUpdate time.Time      `json:"lastImageUpdate" gorm:"type:timestamp;autoUpdateTime:nano"`
+	LastImageUpdate time.Time      `json:"lastImageUpdate" gorm:"type:timestamp"`
 }
 
 type CreateMessageDto struct {
