@@ -114,10 +114,20 @@ func UpdateMessage(c *gin.Context) {
 
 func DeleteMessage(c *gin.Context) {
 	var oldMessage message.Message
-	if err := database.DB.Where("id = ?", c.Param("uuid")).First(&oldMessage).Error; err != nil {
+	id := c.Param("uuid")
+	if err := database.DB.Where("id = ?", id).First(&oldMessage).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
 		return
 	}
 	database.DB.Delete(&oldMessage)
+	filename := fmt.Sprintf("%s.txt", id)
+	_, err := os.Stat(filename)
+	if os.IsExist(err) {
+		err := os.Remove(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	c.JSON(204, gin.H{"data": true})
 }
