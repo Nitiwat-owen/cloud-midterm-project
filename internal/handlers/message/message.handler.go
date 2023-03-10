@@ -50,7 +50,6 @@ func CreateMessage(c *gin.Context) {
 
 	if requestBody.ImageUpdate {
 		filename := fmt.Sprintf("%s.txt", requestBody.ID)
-		fmt.Println(filename)
 		file, err := os.Create(filename)
 		if err != nil {
 			log.Fatal(err)
@@ -68,7 +67,8 @@ func CreateMessage(c *gin.Context) {
 
 func UpdateMessage(c *gin.Context) {
 	var oldMessage message.Message
-	if err := database.DB.Where("id = ?", c.Param("uuid")).First(&oldMessage).Error; err != nil {
+	id := c.Param("uuid")
+	if err := database.DB.Where("id = ?", id).First(&oldMessage).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
 		return
 	}
@@ -78,19 +78,37 @@ func UpdateMessage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	id, _ := uuid.Parse(c.Param("uuid"))
 
 	update := &message.Message{
-		ID:      &id,
 		Author:  requestBody.Author,
 		Message: requestBody.Message,
 		Likes:   requestBody.Likes,
 	}
+
 	if requestBody.ImageUpdate {
 		currentTime, _ := time.Parse(time.Layout, time.Now().Format(time.Layout))
 		update.LastImageUpdate = &currentTime
 	}
 	database.DB.Model(&oldMessage).Updates(update)
+
+	if requestBody.ImageUpdate {
+		filename := fmt.Sprintf("%s.txt", id)
+
+		file, err := os.Create(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if requestBody.Image == "" {
+			err := os.Remove(filename)
+			if err != nil {
+				log.Fatal(err)
+			}
+			c.JSON(204, gin.H{"data": oldMessage})
+			return
+		}
+		_, err = file.WriteString(requestBody.Image)
+	}
 	c.JSON(204, gin.H{"data": oldMessage})
 }
 
