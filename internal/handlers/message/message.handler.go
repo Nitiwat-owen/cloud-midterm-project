@@ -3,14 +3,15 @@ package message
 import (
 	"cloud-midterm-project/database"
 	"cloud-midterm-project/internal/model/message"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func CreateMessage(c *gin.Context) {
-	var requestBody message.MessageDto
+	var requestBody message.CreateMessageDto
 	if err := c.ShouldBind(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -38,4 +39,29 @@ func CreateMessage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": message})
+}
+
+func UpdateMessage(c *gin.Context){
+	var oldMessage message.Message
+	if err := database.DB.Where("id = ?", c.Param("uuid")).First(&oldMessage).Error; err != nil {
+    c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
+    return
+  }
+
+	var requestBody message.UpdateMessageDto
+	if err := c.ShouldBind(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	id, _ := uuid.Parse(c.Param("uuid"))
+	update := &message.Message{
+		ID:           &id,
+		Author:       requestBody.Author,
+		Message:      requestBody.Message,
+		Likes:        requestBody.Likes,
+		ImageUpdate:  requestBody.ImageUpdate,
+		LastUpdateAt: time.Now(),
+	}
+	database.DB.Model(&oldMessage).Updates(update)
+	c.JSON(204,gin.H{"data": oldMessage})
 }

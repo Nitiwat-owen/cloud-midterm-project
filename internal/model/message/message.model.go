@@ -1,9 +1,10 @@
 package message
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Message struct {
@@ -16,10 +17,18 @@ type Message struct {
 	LastUpdateAt time.Time      `json:"lastUpdateAt" gorm:"type:timestamp;autoUpdateTime:nano"`
 }
 
-type MessageDto struct {
+type CreateMessageDto struct {
 	ID          string `json:"uuid" binding:"required"`
 	Author      string `json:"author" binding:"required"`
-	Message     string `json:"message" binding:"required"`
+	Message     string `json:"message"`
+	Likes       uint   `json:"likes"`
+	ImageUpdate bool   `json:"imageUpdate"`
+	Image       string `json:"image"`
+}
+
+type UpdateMessageDto struct {
+	Author      string `json:"author" binding:"required"`
+	Message     string `json:"message"`
 	Likes       uint   `json:"likes"`
 	ImageUpdate bool   `json:"imageUpdate"`
 	Image       string `json:"image"`

@@ -3,8 +3,9 @@ package main
 import (
 	"cloud-midterm-project/database"
 	"cloud-midterm-project/internal/handlers/message"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -17,6 +18,6 @@ func main() {
 	database.ConnectDatabase()
 
 	r.POST("/api/messages", message.CreateMessage)
-
+	r.PUT("/api/messages/:uuid", message.UpdateMessage)
 	r.Run()
 }
