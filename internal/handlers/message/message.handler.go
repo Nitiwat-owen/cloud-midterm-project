@@ -22,17 +22,11 @@ func CreateMessage(c *gin.Context) {
 		return
 	}
 
-	//imageUpdate := false
-	//if !requestBody.ImageUpdate {
-	//	imageUpdate = requestBody.ImageUpdate
-	//}
-
 	message := &message.Message{
-		ID:      &id,
-		Author:  requestBody.Author,
-		Message: requestBody.Message,
-		Likes:   requestBody.Likes,
-		//ImageUpdate:  imageUpdate,
+		ID:           &id,
+		Author:       requestBody.Author,
+		Message:      requestBody.Message,
+		Likes:        requestBody.Likes,
 		ImageUpdate:  requestBody.ImageUpdate,
 		LastUpdateAt: time.Now(),
 	}
