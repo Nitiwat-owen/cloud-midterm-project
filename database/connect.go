@@ -13,13 +13,18 @@ var DB *gorm.DB
 
 func ConnectDatabase() {
 	dsn := fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", config.Config("DB_USERNAME"), config.Config("DB_PASSWORD"), config.Config("DB_NAME"))
-	DB, err := gorm.Open(mysql.Open(dsn))
+	var err error
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		panic("fail to connect database")
 	}
 
-	DB.AutoMigrate(&message.Message{}, &user.User{})
+	err = DB.AutoMigrate(&message.Message{}, &user.User{})
+	if err != nil {
+		panic("fail to migrate database")
+	}
+
 	fmt.Println("Connection Opened to Database")
 
 }
