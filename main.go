@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cloud-midterm-project/database"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -11,6 +12,8 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"data": "hello world"})
 	})
+
+	database.ConnectDatabase()
 
 	r.Run()
 }
