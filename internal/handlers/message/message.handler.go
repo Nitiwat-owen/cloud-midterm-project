@@ -65,3 +65,13 @@ func UpdateMessage(c *gin.Context){
 	database.DB.Model(&oldMessage).Updates(update)
 	c.JSON(204,gin.H{"data": oldMessage})
 }
+
+func DeleteMessage(c *gin.Context){
+	var oldMessage message.Message
+	if err := database.DB.Where("id = ?", c.Param("uuid")).First(&oldMessage).Error; err != nil {
+    c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
+    return
+  }
+	database.DB.Delete(&oldMessage)
+	c.JSON(204,gin.H{"data": true})
+}

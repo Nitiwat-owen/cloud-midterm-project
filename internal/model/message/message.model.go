@@ -12,9 +12,9 @@ type Message struct {
 	Author       string         `json:"author"`
 	Message      string         `json:"message"`
 	Likes        uint           `json:"likes"`
-	ImageUpdate  bool           `json:"imageUpdate"`
 	IsDeleted    gorm.DeletedAt `json:"isDeleted" gorm:"index;type:timestamp"`
 	LastUpdateAt time.Time      `json:"lastUpdateAt" gorm:"type:timestamp;autoUpdateTime:nano"`
+	LastImageUpdate time.Time      `json:"lastImageUpdate" gorm:"type:timestamp;autoUpdateTime:nano"`
 }
 
 type CreateMessageDto struct {
