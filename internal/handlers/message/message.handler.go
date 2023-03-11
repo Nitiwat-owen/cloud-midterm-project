@@ -59,14 +59,14 @@ func GetMessage(c *gin.Context) {
 			Image:       "",
 		}
 		// image is updated
-		if user.LastOnlineAt != nil {
+		if user.LastOnlineAt != nil && element.LastImageUpdate != nil {
 			if element.LastImageUpdate.After(*user.LastOnlineAt) {
 				filename := fmt.Sprintf("%s.txt", element.ID.String())
 				messageDTO.ImageUpdate = true
 				messageDTO.Image = utils.GetFileContent(filename)
 			}
 		} else {
-			if element.LastImageUpdate != nil{
+			if element.LastImageUpdate != nil {
 				filename := fmt.Sprintf("%s.txt", element.ID.String())
 				messageDTO.ImageUpdate = true
 				messageDTO.Image = utils.GetFileContent(filename)
