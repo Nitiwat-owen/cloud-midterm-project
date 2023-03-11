@@ -6,12 +6,13 @@ import (
 	user "cloud-midterm-project/internal/model/user"
 	utils "cloud-midterm-project/internal/utils"
 	"fmt"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -65,9 +66,11 @@ func GetMessage(c *gin.Context) {
 				messageDTO.Image = utils.GetFileContent(filename)
 			}
 		} else {
-			filename := fmt.Sprintf("%s.txt", element.ID.String())
-			messageDTO.ImageUpdate = true
-			messageDTO.Image = utils.GetFileContent(filename)
+			if element.LastImageUpdate != nil{
+				filename := fmt.Sprintf("%s.txt", element.ID.String())
+				messageDTO.ImageUpdate = true
+				messageDTO.Image = utils.GetFileContent(filename)
+			}
 		}
 		result = append(result, messageDTO)
 	}
@@ -113,7 +116,6 @@ func CreateMessage(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	if requestBody.ImageUpdate {
 		filename := fmt.Sprintf("%s.txt", requestBody.ID)
 		file, err := os.Create(filename)

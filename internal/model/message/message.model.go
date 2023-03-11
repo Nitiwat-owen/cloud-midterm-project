@@ -18,7 +18,7 @@ type Message struct {
 }
 
 type GetMessageDto struct {
-	ID          string `json:"uuid""`
+	ID          string `json:"uuid"`
 	Author      string `json:"author"`
 	Message     string `json:"message"`
 	Likes       int    `json:"likes"`
