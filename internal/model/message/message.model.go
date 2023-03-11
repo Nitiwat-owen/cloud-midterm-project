@@ -17,6 +17,15 @@ type Message struct {
 	LastImageUpdate *time.Time     `json:"lastImageUpdate" gorm:"type:timestamp"`
 }
 
+type GetMessageDto struct {
+	ID          string `json:"uuid""`
+	Author      string `json:"author"`
+	Message     string `json:"message"`
+	Likes       int    `json:"likes"`
+	ImageUpdate bool   `json:"imageUpdate"`
+	Image       string `json:"image"`
+}
+
 type CreateMessageDto struct {
 	ID          string `json:"uuid" binding:"required"`
 	Author      string `json:"author" binding:"required"`

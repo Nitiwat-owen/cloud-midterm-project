@@ -4,6 +4,7 @@ import (
 	"cloud-midterm-project/database"
 	"cloud-midterm-project/internal/model/message"
 	user "cloud-midterm-project/internal/model/user"
+	utils "cloud-midterm-project/internal/utils"
 	"fmt"
 	"gorm.io/gorm"
 	"log"
@@ -20,30 +21,63 @@ func GetMessage(c *gin.Context) {
 	username := c.GetHeader("username")
 	// query lastOnlineAt
 	user := &user.User{}
+	messages := &[]message.Message{}
 	err := database.DB.Where("username = ?", username).First(user).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			// create a new user
 			user.Username = username
 			database.DB.Create(user)
+
+			err = database.DB.Find(messages).Error
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
 		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	} else {
+		err = database.DB.Where("last_update_at > ?", user.LastOnlineAt).Find(messages).Error
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 	}
 
-	messages := &[]message.Message{}
-	err = database.DB.Where("last_update_at > ?", user.LastOnlineAt).Find(messages).Error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	var result []*message.GetMessageDto
+	for _, element := range *messages {
+		messageDTO := &message.GetMessageDto{
+			ID:          element.ID.String(),
+			Author:      element.Author,
+			Message:     element.Message,
+			Likes:       int(element.Likes),
+			ImageUpdate: false,
+			Image:       "",
+		}
+		// image is updated
+		if user.LastOnlineAt != nil {
+			if element.LastImageUpdate.After(*user.LastOnlineAt) {
+				filename := fmt.Sprintf("%s.txt", element.ID.String())
+				messageDTO.ImageUpdate = true
+				messageDTO.Image = utils.GetFileContent(filename)
+			}
+		} else {
+			filename := fmt.Sprintf("%s.txt", element.ID.String())
+			messageDTO.ImageUpdate = true
+			messageDTO.Image = utils.GetFileContent(filename)
+		}
+		result = append(result, messageDTO)
 	}
 
 	// update lastOnlineAt
-	user.LastOnlineAt = time.Now()
+	currentTime, _ := time.Parse(time.Layout, time.Now().Format(time.Layout))
+	user.LastOnlineAt = &currentTime
 	_ = database.DB.Model(user).Updates(user).Error
 
-	c.JSON(http.StatusOK, gin.H{"data": messages})
+	c.JSON(http.StatusOK, gin.H{"data": result})
 }
 
 func CreateMessage(c *gin.Context) {
