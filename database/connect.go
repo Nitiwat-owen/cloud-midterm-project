@@ -12,7 +12,7 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	dsn := fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", config.Config("DB_USERNAME"), config.Config("DB_PASSWORD"), config.Config("DB_NAME"))
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config.Config("DB_USERNAME"), config.Config("DB_PASSWORD"), config.Config("DB_HOST"), config.Config("DB_NAME"))
 	var err error
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
