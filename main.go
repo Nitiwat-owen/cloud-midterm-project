@@ -16,7 +16,8 @@ func main() {
 	})
 
 	database.ConnectDatabase()
-
+	
+	r.GET("/api/messages", message.GetMessage)
 	r.POST("/api/messages", message.CreateMessage)
 	r.PUT("/api/messages/:uuid", message.UpdateMessage)
 	r.DELETE("/api/messages/:uuid", message.DeleteMessage)
