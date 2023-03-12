@@ -16,7 +16,10 @@ type Message struct {
 	LastUpdateAt    *time.Time     `json:"lastUpdateAt" gorm:"type:timestamp;autoUpdateTime:nano"`
 	LastImageUpdate *time.Time     `json:"lastImageUpdate" gorm:"type:timestamp"`
 }
-
+type ReturnMessage struct{
+	GetMessagesDTO []*GetMessageDto `json:"getMessage"`
+	DeleteMessage []string `json:"deleteMessage"`
+}
 type GetMessageDto struct {
 	ID          string `json:"uuid"`
 	Author      string `json:"author"`

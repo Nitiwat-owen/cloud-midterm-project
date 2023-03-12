@@ -23,6 +23,7 @@ func GetMessage(c *gin.Context) {
 	// query lastOnlineAt
 	user := &user.User{}
 	messages := &[]message.Message{}
+	delMessages := &[]message.Message{}
 	err := database.DB.Where("username = ?", username).First(user).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -46,9 +47,14 @@ func GetMessage(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		err = database.DB.Unscoped().Where("is_deleted > ?", user.LastOnlineAt).Find(delMessages).Error
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
-	var result []*message.GetMessageDto
+	var getMessage []*message.GetMessageDto
 	for _, element := range *messages {
 		messageDTO := &message.GetMessageDto{
 			ID:          element.ID.String(),
@@ -72,7 +78,11 @@ func GetMessage(c *gin.Context) {
 				messageDTO.Image = utils.GetFileContent(filename)
 			}
 		}
-		result = append(result, messageDTO)
+		getMessage = append(getMessage, messageDTO)
+	}
+	var deleteMessage []string
+	for _,element := range *delMessages{
+		deleteMessage = append(deleteMessage, element.ID.String())
 	}
 
 	// update lastOnlineAt
@@ -80,6 +90,10 @@ func GetMessage(c *gin.Context) {
 	user.LastOnlineAt = &currentTime
 	_ = database.DB.Model(user).Updates(user).Error
 
+	result := message.ReturnMessage{
+		GetMessagesDTO: getMessage,
+		DeleteMessage: deleteMessage,
+	}
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }
 
