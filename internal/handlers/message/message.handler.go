@@ -168,6 +168,7 @@ func UpdateMessage(c *gin.Context) {
 		}
 
 		if requestBody.Image == "" {
+			file.Close() 
 			err := os.Remove(filename)
 			if err != nil {
 				log.Fatal(err)
@@ -190,7 +191,7 @@ func DeleteMessage(c *gin.Context) {
 	database.DB.Delete(&oldMessage)
 	filename := fmt.Sprintf("%s.txt", id)
 	_, err := os.Stat(filename)
-	if os.IsExist(err) {
+	if !os.IsNotExist(err) {
 		err := os.Remove(filename)
 		if err != nil {
 			log.Fatal(err)
