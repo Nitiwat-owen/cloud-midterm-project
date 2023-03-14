@@ -81,7 +81,7 @@ func GetMessage(c *gin.Context) {
 		getMessage = append(getMessage, messageDTO)
 	}
 	var deleteMessage []string
-	for _,element := range *delMessages{
+	for _, element := range *delMessages {
 		deleteMessage = append(deleteMessage, element.ID.String())
 	}
 
@@ -92,7 +92,7 @@ func GetMessage(c *gin.Context) {
 
 	result := message.ReturnMessage{
 		GetMessagesDTO: getMessage,
-		DeleteMessage: deleteMessage,
+		DeleteMessage:  deleteMessage,
 	}
 	c.JSON(http.StatusOK, gin.H{"data": result})
 }
@@ -144,7 +144,7 @@ func CreateMessage(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": message})
+	c.JSON(http.StatusCreated, gin.H{"data": message})
 }
 
 func UpdateMessage(c *gin.Context) {
@@ -182,7 +182,7 @@ func UpdateMessage(c *gin.Context) {
 		}
 
 		if requestBody.Image == "" {
-			file.Close() 
+			file.Close()
 			err := os.Remove(filename)
 			if err != nil {
 				log.Fatal(err)
@@ -192,7 +192,7 @@ func UpdateMessage(c *gin.Context) {
 		}
 		_, err = file.WriteString(requestBody.Image)
 	}
-	c.JSON(204, gin.H{"data": oldMessage})
+	c.JSON(http.StatusNoContent, gin.H{"data": oldMessage})
 }
 
 func DeleteMessage(c *gin.Context) {
@@ -212,5 +212,5 @@ func DeleteMessage(c *gin.Context) {
 		}
 	}
 
-	c.JSON(204, gin.H{"data": true})
+	c.JSON(http.StatusNoContent, gin.H{"data": true})
 }
