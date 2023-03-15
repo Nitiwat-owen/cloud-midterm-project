@@ -161,15 +161,22 @@ func UpdateMessage(c *gin.Context) {
 		return
 	}
 
-	update := &message.Message{
-		Author:  requestBody.Author,
-		Message: requestBody.Message,
-		Likes:   requestBody.Likes,
-	}
+	var update *map[string]interface{}
 
 	if requestBody.ImageUpdate {
 		currentTime, _ := time.Parse(time.Layout, time.Now().Format(time.Layout))
-		update.LastImageUpdate = &currentTime
+		update = &map[string]interface{}{
+			"author":            requestBody.Author,
+			"message":           requestBody.Message,
+			"likes":             requestBody.Likes,
+			"last_image_update": &currentTime,
+		}
+	} else {
+		update = &map[string]interface{}{
+			"author":  requestBody.Author,
+			"message": requestBody.Message,
+			"likes":   requestBody.Likes,
+		}
 	}
 	database.DB.Model(&oldMessage).Updates(update)
 
